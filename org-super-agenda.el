@@ -684,7 +684,7 @@ The string should be the priority cookie letter, e.g. \"A\".")
                                 (cl-loop for key in (sort (ht-keys categories) #'string<)
                                          for name = (concat "Category: " key)
                                          collect (list :name name
-                                                       :items (ht-get categories key))))))
+                                                       :items (nreverse (ht-get categories key)))))))
 (setq org-super-agenda-group-types (plist-put org-super-agenda-group-types
                                               :auto-category #'org-super-agenda--auto-group-category))
 
