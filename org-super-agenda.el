@@ -1146,6 +1146,36 @@ STRING should be that returned by `org-agenda-finalize-entries'"
        (-remove #'s-blank-str? it)
        (s-join "\n" it)))
 
+;;;; IMenu
+
+(defun org-super-agenda-imenu-position-function ()
+  "`imenu-prev-index-position-function' for org-super-agenda."
+  (catch 'finish
+    (let ((pos (point)))
+      (while (setq pos (previous-single-property-change pos 'face))
+        (when (member (get-char-property pos 'face)
+                      '(org-agenda-structure
+                        org-super-agenda-header
+                        org-agenda-date-today
+                        org-agenda-date))
+          (goto-char pos)
+          (throw 'finish t)))
+      ;; Add the first heading to the entry
+      (when (> (point) (point-min))
+        (goto-char (point-min))))))
+
+(defun org-super-agenda-imenu-name-function ()
+  "`imenu-extract-index-name-function' for org-super-agenda."
+  (buffer-substring-no-properties
+   (point) (next-single-property-change (point) 'face)))
+
+(defun org-super-agenda-setup-imenu ()
+  "Set up imenu for `org-agenda-mode'."
+  (setq imenu-prev-index-position-function
+        #'org-super-agenda-imenu-position-function)
+  (setq imenu-extract-index-name-function
+        #'org-super-agenda-imenu-name-function))
+
 ;;;; Footer
 
 (provide 'org-super-agenda)
